@@ -43,8 +43,8 @@ import (
 	"sigs.k8s.io/kustomize/kyaml/yaml"
 	"sigs.k8s.io/kustomize/kyaml/yaml/merge2"
 
-	"github.com/docker/compose-cli/api/config"
-	"github.com/docker/compose-cli/utils"
+	"github.com/docker/compose-ecs/api/config"
+	"github.com/docker/compose-ecs/utils"
 )
 
 func (b *ecsAPIService) Convert(ctx context.Context, project *types.Project, options api.ConvertOptions) ([]byte, error) {

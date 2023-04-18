@@ -24,7 +24,7 @@ curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/instal
 
 ## Manual install
 
-You can download the Compose CLI from [latest release](https://github.com/docker/compose-cli/releases/latest).
+You can download the Compose CLI from [latest release](https://github.com/docker/compose-ecs/releases/latest).
 
 You will then need to rename it and make it executable (the commands below assumes you downloaded the `amd64` version of the binary):
 

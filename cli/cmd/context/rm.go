@@ -19,7 +19,7 @@ package context
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/docker/compose-cli/cli/mobycli"
+	"github.com/docker/compose-ecs/cli/mobycli"
 )
 
 type removeOpts struct {

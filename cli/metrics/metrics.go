@@ -24,7 +24,7 @@ import (
 
 	"github.com/docker/compose/v2/pkg/utils"
 
-	"github.com/docker/compose-cli/cli/metrics/metadata"
+	"github.com/docker/compose-ecs/cli/metrics/metadata"
 )
 
 func (c *client) Track(cmd CmdResult) {

@@ -27,7 +27,7 @@ import (
 
 	"github.com/docker/compose/v2/pkg/api"
 
-	"github.com/docker/compose-cli/api/client"
+	"github.com/docker/compose-ecs/api/client"
 )
 
 type killOpts struct {

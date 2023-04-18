@@ -21,7 +21,7 @@ import (
 
 	"github.com/docker/compose/v2/pkg/api"
 
-	"github.com/docker/compose-cli/api/resources"
+	"github.com/docker/compose-ecs/api/resources"
 )
 
 type resourceService struct {

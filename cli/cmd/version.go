@@ -25,8 +25,8 @@ import (
 	"github.com/docker/compose/v2/cmd/formatter"
 	"github.com/spf13/cobra"
 
-	"github.com/docker/compose-cli/cli/mobycli"
-	"github.com/docker/compose-cli/internal"
+	"github.com/docker/compose-ecs/cli/mobycli"
+	"github.com/docker/compose-ecs/internal"
 )
 
 const formatOpt = "format"

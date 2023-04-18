@@ -24,8 +24,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/docker/compose-cli/api/context/store"
-	"github.com/docker/compose-cli/kube"
+	"github.com/docker/compose-ecs/api/context/store"
+	"github.com/docker/compose-ecs/kube"
 )
 
 func init() {

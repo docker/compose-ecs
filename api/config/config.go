@@ -23,7 +23,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/docker/compose-cli/api/context/store"
+	"github.com/docker/compose-ecs/api/context/store"
 )
 
 // ContextKey defines a type for keys in the context passed

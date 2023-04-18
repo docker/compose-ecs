@@ -22,10 +22,10 @@ import (
 
 	"gotest.tools/v3/assert"
 
-	"github.com/docker/compose-cli/cli/cmd"
-	"github.com/docker/compose-cli/cli/cmd/context"
-	"github.com/docker/compose-cli/cli/cmd/login"
-	"github.com/docker/compose-cli/cli/cmd/run"
+	"github.com/docker/compose-ecs/cli/cmd"
+	"github.com/docker/compose-ecs/cli/cmd/context"
+	"github.com/docker/compose-ecs/cli/cmd/login"
+	"github.com/docker/compose-ecs/cli/cmd/run"
 )
 
 func TestCheckOwnCommand(t *testing.T) {

@@ -42,7 +42,7 @@ __Legend:__
 | service.dns                    | x |
 | service.dns_search             | x |
 | service.domainname             | x |
-| service.tmpfs                  | x |  Not supported on Fargate, see https://github.com/docker/compose-cli/issues/839
+| service.tmpfs                  | x |  Not supported on Fargate, see https://github.com/docker/compose-ecs/issues/839
 | service.entrypoint             | ✓ |
 | service.env_file               | ✓ |
 | service.environment            | ✓ |

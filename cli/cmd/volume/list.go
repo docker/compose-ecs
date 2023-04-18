@@ -25,8 +25,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/docker/compose-cli/api/client"
-	"github.com/docker/compose-cli/api/volumes"
+	"github.com/docker/compose-ecs/api/client"
+	"github.com/docker/compose-ecs/api/volumes"
 )
 
 type listVolumeOpts struct {

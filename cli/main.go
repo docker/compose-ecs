@@ -37,27 +37,24 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 
-	"github.com/docker/compose-cli/api/backend"
-	"github.com/docker/compose-cli/api/config"
-	apicontext "github.com/docker/compose-cli/api/context"
-	"github.com/docker/compose-cli/api/context/store"
-	"github.com/docker/compose-cli/cli/cmd"
-	contextcmd "github.com/docker/compose-cli/cli/cmd/context"
-	"github.com/docker/compose-cli/cli/cmd/login"
-	"github.com/docker/compose-cli/cli/cmd/logout"
-	"github.com/docker/compose-cli/cli/cmd/run"
-	"github.com/docker/compose-cli/cli/cmd/volume"
-	cliconfig "github.com/docker/compose-cli/cli/config"
-	"github.com/docker/compose-cli/cli/metrics"
-	"github.com/docker/compose-cli/cli/mobycli"
-	cliopts "github.com/docker/compose-cli/cli/options"
-	"github.com/docker/compose-cli/local"
+	"github.com/docker/compose-ecs/api/backend"
+	"github.com/docker/compose-ecs/api/config"
+	apicontext "github.com/docker/compose-ecs/api/context"
+	"github.com/docker/compose-ecs/api/context/store"
+	"github.com/docker/compose-ecs/cli/cmd"
+	contextcmd "github.com/docker/compose-ecs/cli/cmd/context"
+	"github.com/docker/compose-ecs/cli/cmd/login"
+	"github.com/docker/compose-ecs/cli/cmd/logout"
+	"github.com/docker/compose-ecs/cli/cmd/run"
+	"github.com/docker/compose-ecs/cli/cmd/volume"
+	cliconfig "github.com/docker/compose-ecs/cli/config"
+	"github.com/docker/compose-ecs/cli/metrics"
+	"github.com/docker/compose-ecs/cli/mobycli"
+	cliopts "github.com/docker/compose-ecs/cli/options"
 
 	// Backend registrations
-	_ "github.com/docker/compose-cli/aci"
-	_ "github.com/docker/compose-cli/ecs"
-	_ "github.com/docker/compose-cli/ecs/local"
-	_ "github.com/docker/compose-cli/local"
+	_ "github.com/docker/compose-ecs/ecs"
+	_ "github.com/docker/compose-ecs/ecs/local"
 )
 
 var (
@@ -227,11 +224,6 @@ func main() {
 	}
 	ctx = context.WithValue(ctx, config.ContextTypeKey, ctype)
 
-	initLocalFn := func() (backend.Service, error) {
-		return local.GetLocalBackend(configDir, opts)
-	}
-	backend.Register(store.DefaultContextType, store.DefaultContextType, initLocalFn, nil)
-	backend.Register(store.LocalContextType, store.LocalContextType, initLocalFn, nil)
 	service, err := backend.Get(ctype)
 	if err != nil {
 		fatal(err)

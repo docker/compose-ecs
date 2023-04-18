@@ -1,7 +1,7 @@
 # Docker Compose "Cloud Integrations"
 
-[![Actions Status](https://github.com/docker/compose-cli/workflows/Continuous%20integration/badge.svg)](https://github.com/docker/compose-cli/actions)
-[![Actions Status](https://github.com/docker/compose-cli/workflows/Windows%20CI/badge.svg)](https://github.com/docker/compose-cli/actions)
+[![Actions Status](https://github.com/docker/compose-ecs/workflows/Continuous%20integration/badge.svg)](https://github.com/docker/compose-ecs/actions)
+[![Actions Status](https://github.com/docker/compose-ecs/workflows/Windows%20CI/badge.svg)](https://github.com/docker/compose-ecs/actions)
 
 This Compose CLI tool makes it easy to run Docker containers and Docker Compose applications in the cloud using either :
 - Amazon Elastic Container Service
@@ -28,7 +28,7 @@ To get started with Compose CLI, all you need is:
 * An [AWS](https://aws.amazon.com) or [Azure](https://azure.microsoft.com)
   account in order to use the Compose Cloud integration
 
-Please create [issues](https://github.com/docker/compose-cli/issues) to leave feedback.
+Please create [issues](https://github.com/docker/compose-ecs/issues) to leave feedback.
 
 ## Examples
 

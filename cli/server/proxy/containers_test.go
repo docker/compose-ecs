@@ -19,12 +19,12 @@ package proxy
 import (
 	"testing"
 
-	"github.com/docker/compose-cli/utils"
+	"github.com/docker/compose-ecs/utils"
 
 	"gotest.tools/v3/assert"
 
-	"github.com/docker/compose-cli/api/containers"
-	containersv1 "github.com/docker/compose-cli/cli/server/protos/containers/v1"
+	"github.com/docker/compose-ecs/api/containers"
+	containersv1 "github.com/docker/compose-ecs/cli/server/protos/containers/v1"
 )
 
 func TestGrpcContainerToContainerConfig(t *testing.T) {

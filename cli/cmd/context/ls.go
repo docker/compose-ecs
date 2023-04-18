@@ -27,9 +27,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	apicontext "github.com/docker/compose-cli/api/context"
-	"github.com/docker/compose-cli/api/context/store"
-	"github.com/docker/compose-cli/cli/mobycli"
+	apicontext "github.com/docker/compose-ecs/api/context"
+	"github.com/docker/compose-ecs/api/context/store"
+	"github.com/docker/compose-ecs/cli/mobycli"
 )
 
 type lsOpts struct {

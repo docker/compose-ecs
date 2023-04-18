@@ -19,9 +19,9 @@ package proxy
 import (
 	"context"
 
-	"github.com/docker/compose-cli/api/config"
-	"github.com/docker/compose-cli/api/context/store"
-	contextsv1 "github.com/docker/compose-cli/cli/server/protos/contexts/v1"
+	"github.com/docker/compose-ecs/api/config"
+	"github.com/docker/compose-ecs/api/context/store"
+	contextsv1 "github.com/docker/compose-ecs/cli/server/protos/contexts/v1"
 )
 
 type contextsProxy struct {

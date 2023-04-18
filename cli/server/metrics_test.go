@@ -27,17 +27,17 @@ import (
 	"google.golang.org/grpc/metadata"
 	"gotest.tools/v3/assert"
 
-	"github.com/docker/compose-cli/api/client"
-	"github.com/docker/compose-cli/api/containers"
-	"github.com/docker/compose-cli/api/resources"
-	"github.com/docker/compose-cli/api/secrets"
-	"github.com/docker/compose-cli/api/volumes"
-	"github.com/docker/compose-cli/cli/metrics"
-	containersv1 "github.com/docker/compose-cli/cli/server/protos/containers/v1"
-	contextsv1 "github.com/docker/compose-cli/cli/server/protos/contexts/v1"
-	streamsv1 "github.com/docker/compose-cli/cli/server/protos/streams/v1"
-	volumesv1 "github.com/docker/compose-cli/cli/server/protos/volumes/v1"
-	"github.com/docker/compose-cli/cli/server/proxy"
+	"github.com/docker/compose-ecs/api/client"
+	"github.com/docker/compose-ecs/api/containers"
+	"github.com/docker/compose-ecs/api/resources"
+	"github.com/docker/compose-ecs/api/secrets"
+	"github.com/docker/compose-ecs/api/volumes"
+	"github.com/docker/compose-ecs/cli/metrics"
+	containersv1 "github.com/docker/compose-ecs/cli/server/protos/containers/v1"
+	contextsv1 "github.com/docker/compose-ecs/cli/server/protos/contexts/v1"
+	streamsv1 "github.com/docker/compose-ecs/cli/server/protos/streams/v1"
+	volumesv1 "github.com/docker/compose-ecs/cli/server/protos/volumes/v1"
+	"github.com/docker/compose-ecs/cli/server/proxy"
 )
 
 func TestAllMethodsHaveCorrespondingCliCommand(t *testing.T) {

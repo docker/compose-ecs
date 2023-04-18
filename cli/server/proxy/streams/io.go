@@ -20,7 +20,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 
-	streamsv1 "github.com/docker/compose-cli/cli/server/protos/streams/v1"
+	streamsv1 "github.com/docker/compose-ecs/cli/server/protos/streams/v1"
 )
 
 // IO implements an io.ReadWriter that forwards everything to the stream

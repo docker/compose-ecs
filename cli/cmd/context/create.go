@@ -22,8 +22,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/docker/compose-cli/api/context/store"
-	"github.com/docker/compose-cli/cli/mobycli"
+	"github.com/docker/compose-ecs/api/context/store"
+	"github.com/docker/compose-ecs/cli/mobycli"
 )
 
 type descriptionCreateOpts struct {

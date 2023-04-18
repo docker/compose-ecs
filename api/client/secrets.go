@@ -21,7 +21,7 @@ import (
 
 	"github.com/docker/compose/v2/pkg/api"
 
-	"github.com/docker/compose-cli/api/secrets"
+	"github.com/docker/compose-ecs/api/secrets"
 )
 
 type secretsService struct {

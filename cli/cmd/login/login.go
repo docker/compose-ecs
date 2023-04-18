@@ -25,8 +25,8 @@ import (
 
 	"github.com/docker/compose/v2/pkg/api"
 
-	"github.com/docker/compose-cli/api/client"
-	"github.com/docker/compose-cli/cli/mobycli"
+	"github.com/docker/compose-ecs/api/client"
+	"github.com/docker/compose-ecs/cli/mobycli"
 )
 
 // Command returns the login command

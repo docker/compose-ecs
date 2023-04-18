@@ -35,7 +35,7 @@ import (
 	"github.com/pkg/errors"
 	"gopkg.in/ini.v1"
 
-	"github.com/docker/compose-cli/api/context/store"
+	"github.com/docker/compose-ecs/api/context/store"
 )
 
 func getEnvVars() ContextParams {

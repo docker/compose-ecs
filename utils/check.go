@@ -25,7 +25,7 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
 
-	"github.com/docker/compose-cli/api/config"
+	"github.com/docker/compose-ecs/api/config"
 )
 
 // CheckUnsupported checks if a flag was used when it shouldn't and adds an error in case

@@ -24,10 +24,10 @@ import (
 
 	"github.com/docker/compose/v2/pkg/progress"
 
-	"github.com/docker/compose-cli/aci"
-	"github.com/docker/compose-cli/api/client"
-	"github.com/docker/compose-cli/api/context/store"
-	"github.com/docker/compose-cli/ecs"
+	"github.com/docker/compose-ecs/aci"
+	"github.com/docker/compose-ecs/api/client"
+	"github.com/docker/compose-ecs/api/context/store"
+	"github.com/docker/compose-ecs/ecs"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/cobra"

@@ -21,14 +21,14 @@ import (
 
 	"github.com/docker/compose/v2/pkg/api"
 
-	"github.com/docker/compose-cli/api/backend"
-	"github.com/docker/compose-cli/api/cloud"
-	"github.com/docker/compose-cli/api/containers"
-	apicontext "github.com/docker/compose-cli/api/context"
-	"github.com/docker/compose-cli/api/context/store"
-	"github.com/docker/compose-cli/api/resources"
-	"github.com/docker/compose-cli/api/secrets"
-	"github.com/docker/compose-cli/api/volumes"
+	"github.com/docker/compose-ecs/api/backend"
+	"github.com/docker/compose-ecs/api/cloud"
+	"github.com/docker/compose-ecs/api/containers"
+	apicontext "github.com/docker/compose-ecs/api/context"
+	"github.com/docker/compose-ecs/api/context/store"
+	"github.com/docker/compose-ecs/api/resources"
+	"github.com/docker/compose-ecs/api/secrets"
+	"github.com/docker/compose-ecs/api/volumes"
 )
 
 // New returns a backend client associated with current context

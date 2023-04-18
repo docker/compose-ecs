@@ -21,8 +21,8 @@ import (
 
 	"github.com/docker/compose/v2/pkg/api"
 
-	"github.com/docker/compose-cli/api/cloud"
-	"github.com/docker/compose-cli/ecs"
+	"github.com/docker/compose-ecs/api/cloud"
+	"github.com/docker/compose-ecs/ecs"
 )
 
 var _ cloud.Service = ecsLocalSimulation{}

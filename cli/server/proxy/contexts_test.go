@@ -23,8 +23,8 @@ import (
 
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"github.com/docker/compose-cli/api/context/store"
-	contextsv1 "github.com/docker/compose-cli/cli/server/protos/contexts/v1"
+	"github.com/docker/compose-ecs/api/context/store"
+	contextsv1 "github.com/docker/compose-ecs/cli/server/protos/contexts/v1"
 )
 
 func TestConvertContext(t *testing.T) {

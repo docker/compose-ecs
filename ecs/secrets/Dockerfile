@@ -13,7 +13,7 @@
 #   limitations under the License.
 
 FROM golang:1.19 AS builder
-WORKDIR $GOPATH/src/github.com/docker/compose-cli/ecs/secrets
+WORKDIR $GOPATH/src/github.com/docker/compose-ecs/ecs/secrets
 COPY . .
 RUN GO111MODULE=auto CGO_ENABLED=0 go build -ldflags="-w -s" -o /go/bin/secrets main/main.go
 

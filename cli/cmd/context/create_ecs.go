@@ -27,9 +27,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/docker/compose-cli/api/client"
-	"github.com/docker/compose-cli/api/context/store"
-	"github.com/docker/compose-cli/ecs"
+	"github.com/docker/compose-ecs/api/client"
+	"github.com/docker/compose-ecs/api/context/store"
+	"github.com/docker/compose-ecs/ecs"
 )
 
 func init() {

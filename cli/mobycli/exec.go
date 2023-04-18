@@ -32,10 +32,10 @@ import (
 	"github.com/google/shlex"
 	"github.com/spf13/cobra"
 
-	apicontext "github.com/docker/compose-cli/api/context"
-	"github.com/docker/compose-cli/api/context/store"
-	"github.com/docker/compose-cli/cli/metrics"
-	"github.com/docker/compose-cli/cli/mobycli/resolvepath"
+	apicontext "github.com/docker/compose-ecs/api/context"
+	"github.com/docker/compose-ecs/api/context/store"
+	"github.com/docker/compose-ecs/cli/metrics"
+	"github.com/docker/compose-ecs/cli/mobycli/resolvepath"
 )
 
 var delegatedContextTypes = []string{store.DefaultContextType}

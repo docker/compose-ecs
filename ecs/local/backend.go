@@ -25,13 +25,13 @@ import (
 	"github.com/docker/compose/v2/pkg/api"
 	"github.com/docker/compose/v2/pkg/compose"
 
-	"github.com/docker/compose-cli/api/backend"
-	"github.com/docker/compose-cli/api/cloud"
-	"github.com/docker/compose-cli/api/containers"
-	"github.com/docker/compose-cli/api/context/store"
-	"github.com/docker/compose-cli/api/resources"
-	"github.com/docker/compose-cli/api/secrets"
-	"github.com/docker/compose-cli/api/volumes"
+	"github.com/docker/compose-ecs/api/backend"
+	"github.com/docker/compose-ecs/api/cloud"
+	"github.com/docker/compose-ecs/api/containers"
+	"github.com/docker/compose-ecs/api/context/store"
+	"github.com/docker/compose-ecs/api/resources"
+	"github.com/docker/compose-ecs/api/secrets"
+	"github.com/docker/compose-ecs/api/volumes"
 )
 
 const backendType = store.EcsLocalSimulationContextType

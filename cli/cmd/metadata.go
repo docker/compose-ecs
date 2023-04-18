@@ -22,7 +22,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/docker/compose-cli/internal"
+	"github.com/docker/compose-ecs/internal"
 )
 
 // BackendMetadata backend metadata

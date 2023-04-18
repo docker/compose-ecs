@@ -21,7 +21,7 @@ import (
 
 	"github.com/docker/compose/v2/pkg/api"
 
-	"github.com/docker/compose-cli/api/containers"
+	"github.com/docker/compose-ecs/api/containers"
 )
 
 type containerService struct {

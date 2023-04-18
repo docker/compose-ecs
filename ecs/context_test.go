@@ -27,7 +27,7 @@ import (
 	"gotest.tools/v3/fs"
 	"gotest.tools/v3/golden"
 
-	"github.com/docker/compose-cli/api/context/store"
+	"github.com/docker/compose-ecs/api/context/store"
 )
 
 func TestCreateContextDataFromEnv(t *testing.T) {

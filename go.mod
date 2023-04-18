@@ -1,4 +1,4 @@
-module github.com/docker/compose-cli
+module github.com/docker/compose-ecs
 
 go 1.19
 

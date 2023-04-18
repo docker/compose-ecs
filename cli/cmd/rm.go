@@ -27,8 +27,8 @@ import (
 
 	"github.com/docker/compose/v2/pkg/api"
 
-	"github.com/docker/compose-cli/api/client"
-	"github.com/docker/compose-cli/api/containers"
+	"github.com/docker/compose-ecs/api/client"
+	"github.com/docker/compose-ecs/api/containers"
 )
 
 type rmOpts struct {

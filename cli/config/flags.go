@@ -24,7 +24,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/pflag"
 
-	"github.com/docker/compose-cli/api/config"
+	"github.com/docker/compose-ecs/api/config"
 )
 
 // ConfigFlags are the global CLI flags
