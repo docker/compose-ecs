@@ -25,7 +25,7 @@ import (
 	"github.com/docker/compose-ecs/utils"
 )
 
-func (b *ecsAPIService) Down(ctx context.Context, projectName string, options api.DownOptions) error {
+func (b *ComposeECS) Down(ctx context.Context, projectName string, options api.DownOptions) error {
 	if err := checkUnsupportedDownOptions(ctx, options); err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func (b *ecsAPIService) Down(ctx context.Context, projectName string, options ap
 	})
 }
 
-func (b *ecsAPIService) down(ctx context.Context, projectName string) error {
+func (b *ComposeECS) down(ctx context.Context, projectName string) error {
 	resources, err := b.aws.ListStackResources(ctx, projectName)
 	if err != nil {
 		return err
@@ -62,7 +62,7 @@ func (b *ecsAPIService) down(ctx context.Context, projectName string) error {
 	return b.WaitStackCompletion(ctx, projectName, stackDelete, previousEvents...)
 }
 
-func (b *ecsAPIService) previousStackEvents(ctx context.Context, project string) ([]string, error) {
+func (b *ComposeECS) previousStackEvents(ctx context.Context, project string) ([]string, error) {
 	events, err := b.aws.DescribeStackEvents(ctx, project)
 	if err != nil {
 		return nil, err

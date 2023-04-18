@@ -17,38 +17,10 @@
 package backend
 
 import (
-	"errors"
-	"fmt"
-
-	"github.com/docker/compose/v2/pkg/api"
-	"github.com/sirupsen/logrus"
-
-	"github.com/docker/compose-ecs/api/cloud"
-	"github.com/docker/compose-ecs/api/containers"
-	"github.com/docker/compose-ecs/api/resources"
 	"github.com/docker/compose-ecs/api/secrets"
 	"github.com/docker/compose-ecs/api/volumes"
+	"github.com/docker/compose/v2/pkg/api"
 )
-
-var (
-	errNoType         = errors.New("backend: no type")
-	errNoName         = errors.New("backend: no name")
-	errTypeRegistered = errors.New("backend: already registered")
-)
-
-type initFunc func() (Service, error)
-type getCloudServiceFunc func() (cloud.Service, error)
-
-type registeredBackend struct {
-	name            string
-	backendType     string
-	init            initFunc
-	getCloudService getCloudServiceFunc
-}
-
-var backends = struct {
-	r []*registeredBackend
-}{}
 
 var instance Service
 
@@ -64,55 +36,7 @@ func WithBackend(s Service) {
 
 // Service aggregates the service interfaces
 type Service interface {
-	ContainerService() containers.Service
 	ComposeService() api.Service
-	ResourceService() resources.Service
 	SecretsService() secrets.Service
 	VolumeService() volumes.Service
-}
-
-// Register adds a typed backend to the registry
-func Register(name string, backendType string, init initFunc, getCoudService getCloudServiceFunc) {
-	if name == "" {
-		logrus.Fatal(errNoName)
-	}
-	if backendType == "" {
-		logrus.Fatal(errNoType)
-	}
-	for _, b := range backends.r {
-		if b.backendType == backendType {
-			logrus.Fatal(errTypeRegistered)
-		}
-	}
-
-	backends.r = append(backends.r, &registeredBackend{
-		name,
-		backendType,
-		init,
-		getCoudService,
-	})
-}
-
-// Get returns the backend registered for a particular type, it returns
-// an error if there is no registered backends for the given type.
-func Get(backendType string) (Service, error) {
-	for _, b := range backends.r {
-		if b.backendType == backendType {
-			return b.init()
-		}
-	}
-
-	return nil, api.ErrNotFound
-}
-
-// GetCloudService returns the backend registered for a particular type, it returns
-// an error if there is no registered backends for the given type.
-func GetCloudService(backendType string) (cloud.Service, error) {
-	for _, b := range backends.r {
-		if b.backendType == backendType {
-			return b.getCloudService()
-		}
-	}
-
-	return nil, fmt.Errorf("backend not found for backend type %s", backendType)
 }

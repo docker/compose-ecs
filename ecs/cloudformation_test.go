@@ -589,7 +589,7 @@ func convertYaml(t *testing.T, yaml string, assertErr error, fn ...func(m *MockA
 		f(m.EXPECT())
 	}
 
-	backend := &ecsAPIService{
+	backend := &ComposeECS{
 		aws: m,
 	}
 	template, err := backend.convert(context.TODO(), project)

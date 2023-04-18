@@ -21,11 +21,11 @@ import (
 	"io"
 	"os"
 
+	"github.com/docker/compose-ecs/api/backend"
 	formatter2 "github.com/docker/compose/v2/cmd/formatter"
 
 	"github.com/spf13/cobra"
 
-	"github.com/docker/compose-ecs/api/client"
 	"github.com/docker/compose-ecs/api/volumes"
 )
 
@@ -41,10 +41,7 @@ func listVolume() *cobra.Command {
 		Short: "list available volumes in context.",
 		Args:  cobra.ExactArgs(0),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, err := client.New(cmd.Context())
-			if err != nil {
-				return err
-			}
+			c := backend.Current()
 			vols, err := c.VolumeService().List(cmd.Context())
 			if err != nil {
 				return err

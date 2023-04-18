@@ -39,7 +39,7 @@ import (
 const secretsInitContainerImage = "docker/ecs-secrets-sidecar:1.0"
 const searchDomainInitContainerImage = "docker/ecs-searchdomain-sidecar:1.0"
 
-func (b *ecsAPIService) createTaskDefinition(project *types.Project, service types.ServiceConfig, resources awsResources) (*ecs.TaskDefinition, error) {
+func (b *ComposeECS) createTaskDefinition(project *types.Project, service types.ServiceConfig, resources awsResources) (*ecs.TaskDefinition, error) {
 	cpu, mem, err := toLimits(service)
 	if err != nil {
 		return nil, err

@@ -34,7 +34,7 @@ type autoscalingConfig struct {
 	Max    int `json:"max,omitempty"`
 }
 
-func (b *ecsAPIService) createAutoscalingPolicy(project *types.Project, resources awsResources, template *cloudformation.Template, service types.ServiceConfig) error {
+func (b *ComposeECS) createAutoscalingPolicy(project *types.Project, resources awsResources, template *cloudformation.Template, service types.ServiceConfig) error {
 	if service.Deploy == nil {
 		return nil
 	}

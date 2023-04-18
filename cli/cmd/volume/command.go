@@ -20,28 +20,24 @@ import (
 	"context"
 	"fmt"
 
-	format "github.com/docker/compose/v2/cmd/formatter"
-
-	"github.com/docker/compose/v2/pkg/progress"
-
-	"github.com/docker/compose-ecs/aci"
-	"github.com/docker/compose-ecs/api/client"
-	"github.com/docker/compose-ecs/api/context/store"
+	"github.com/docker/compose-ecs/api/backend"
 	"github.com/docker/compose-ecs/ecs"
 
+	format "github.com/docker/compose/v2/cmd/formatter"
+	"github.com/docker/compose/v2/pkg/progress"
 	"github.com/hashicorp/go-multierror"
 	"github.com/spf13/cobra"
 )
 
 // Command manage volumes
-func Command(ctype string) *cobra.Command {
+func Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "volume",
 		Short: "Manages volumes",
 	}
 
 	cmd.AddCommand(
-		createVolume(ctype),
+		createVolume(),
 		listVolume(),
 		rmVolume(),
 		inspectVolume(),
@@ -49,32 +45,15 @@ func Command(ctype string) *cobra.Command {
 	return cmd
 }
 
-func createVolume(ctype string) *cobra.Command {
-	var usage string
-	var short string
-	switch ctype {
-	case store.AciContextType:
-		usage = "create --storage-account ACCOUNT VOLUME"
-		short = "Creates an Azure file share to use as ACI volume."
-	case store.EcsContextType:
-		usage = "create [OPTIONS] VOLUME"
-		short = "Creates an EFS filesystem to use as AWS volume."
-	default:
-		usage = "create [OPTIONS] VOLUME"
-		short = "Creates a volume"
-	}
-
+func createVolume() *cobra.Command {
 	var opts interface{}
 	cmd := &cobra.Command{
-		Use:   usage,
-		Short: short,
+		Use:   "create [OPTIONS] VOLUME",
+		Short: "Creates an EFS filesystem to use as AWS volume.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			c, err := client.New(ctx)
-			if err != nil {
-				return err
-			}
+			c := backend.Current()
 			result, err := progress.RunWithStatus(ctx, func(ctx context.Context) (string, error) {
 				volume, err := c.VolumeService().Create(ctx, args[0], opts)
 				if err != nil {
@@ -90,20 +69,12 @@ func createVolume(ctype string) *cobra.Command {
 		},
 	}
 
-	switch ctype {
-	case store.AciContextType:
-		aciOpts := aci.VolumeCreateOptions{}
-		cmd.Flags().StringVar(&aciOpts.Account, "storage-account", "", "Storage account name")
-		_ = cmd.MarkFlagRequired("storage-account")
-		opts = &aciOpts
-	case store.EcsContextType:
-		ecsOpts := ecs.VolumeCreateOptions{}
-		cmd.Flags().StringVar(&ecsOpts.KmsKeyID, "kms-key", "", "ID of the AWS KMS CMK to be used to protect the encrypted file system")
-		cmd.Flags().StringVar(&ecsOpts.PerformanceMode, "performance-mode", "", "performance mode of the file system. (generalPurpose|maxIO)")
-		cmd.Flags().Float64Var(&ecsOpts.ProvisionedThroughputInMibps, "provisioned-throughput", 0, "throughput in MiB/s (1-1024)")
-		cmd.Flags().StringVar(&ecsOpts.ThroughputMode, "throughput-mode", "", "throughput mode (bursting|provisioned)")
-		opts = &ecsOpts
-	}
+	ecsOpts := ecs.VolumeCreateOptions{}
+	cmd.Flags().StringVar(&ecsOpts.KmsKeyID, "kms-key", "", "ID of the AWS KMS CMK to be used to protect the encrypted file system")
+	cmd.Flags().StringVar(&ecsOpts.PerformanceMode, "performance-mode", "", "performance mode of the file system. (generalPurpose|maxIO)")
+	cmd.Flags().Float64Var(&ecsOpts.ProvisionedThroughputInMibps, "provisioned-throughput", 0, "throughput in MiB/s (1-1024)")
+	cmd.Flags().StringVar(&ecsOpts.ThroughputMode, "throughput-mode", "", "throughput mode (bursting|provisioned)")
+	opts = &ecsOpts
 	return cmd
 }
 
@@ -113,13 +84,10 @@ func rmVolume() *cobra.Command {
 		Short: "Remove one or more volumes.",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, err := client.New(cmd.Context())
-			if err != nil {
-				return err
-			}
+			c := backend.Current()
 			var errs *multierror.Error
 			for _, id := range args {
-				err = c.VolumeService().Delete(cmd.Context(), id, nil)
+				err := c.VolumeService().Delete(cmd.Context(), id, nil)
 				if err != nil {
 					errs = multierror.Append(errs, err)
 					continue
@@ -139,10 +107,7 @@ func inspectVolume() *cobra.Command {
 		Short: "Inspect one or more volumes.",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, err := client.New(cmd.Context())
-			if err != nil {
-				return err
-			}
+			c := backend.Current()
 			v, err := c.VolumeService().Inspect(cmd.Context(), args[0])
 			if err != nil {
 				return err

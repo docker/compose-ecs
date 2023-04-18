@@ -21,10 +21,10 @@ import (
 	"io"
 	"os"
 
+	"github.com/docker/compose-ecs/api/backend"
 	"github.com/docker/compose/v2/cmd/formatter"
 	"github.com/spf13/cobra"
 
-	"github.com/docker/compose-ecs/api/client"
 	"github.com/docker/compose-ecs/api/secrets"
 )
 
@@ -50,10 +50,7 @@ func createSecret() *cobra.Command {
 		Short: "Creates a secret.",
 		Args:  cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, err := client.New(cmd.Context())
-			if err != nil {
-				return err
-			}
+			c := backend.Current()
 			file := "-"
 			if len(args) == 2 {
 				file = args[1]
@@ -66,7 +63,7 @@ func createSecret() *cobra.Command {
 			case "-":
 				in = os.Stdin
 			default:
-				in, err = os.Open(file)
+				in, err := os.Open(file)
 				if err != nil {
 					return err
 				}
@@ -95,10 +92,7 @@ func inspectSecret() *cobra.Command {
 		Short: "Displays secret details",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, err := client.New(cmd.Context())
-			if err != nil {
-				return err
-			}
+			c := backend.Current()
 			secret, err := c.SecretsService().InspectSecret(cmd.Context(), args[0])
 			if err != nil {
 				return err
@@ -126,10 +120,7 @@ func listSecrets() *cobra.Command {
 		Aliases: []string{"ls"},
 		Short:   "List secrets stored for the existing account.",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, err := client.New(cmd.Context())
-			if err != nil {
-				return err
-			}
+			c := backend.Current()
 			secretsList, err := c.SecretsService().ListSecrets(cmd.Context())
 			if err != nil {
 				return err
@@ -182,10 +173,7 @@ func deleteSecret() *cobra.Command {
 		Short:   "Removes a secret.",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			c, err := client.New(cmd.Context())
-			if err != nil {
-				return err
-			}
+			c := backend.Current()
 			return c.SecretsService().DeleteSecret(cmd.Context(), args[0], opts.recover)
 		},
 	}

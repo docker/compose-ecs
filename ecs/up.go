@@ -31,7 +31,7 @@ import (
 	"github.com/docker/compose-ecs/utils"
 )
 
-func (b *ecsAPIService) Up(ctx context.Context, project *types.Project, options api.UpOptions) error {
+func (b *ComposeECS) Up(ctx context.Context, project *types.Project, options api.UpOptions) error {
 	if err := checkUnsupportedUpOptions(ctx, options); err != nil {
 		return err
 	}
@@ -40,7 +40,7 @@ func (b *ecsAPIService) Up(ctx context.Context, project *types.Project, options 
 	})
 }
 
-func (b *ecsAPIService) up(ctx context.Context, project *types.Project, options api.UpOptions) error {
+func (b *ComposeECS) up(ctx context.Context, project *types.Project, options api.UpOptions) error {
 	logrus.Debugf("deploying on AWS with region=%q", b.Region)
 	err := b.aws.CheckRequirements(ctx, b.Region)
 	if err != nil {

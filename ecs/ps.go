@@ -24,7 +24,7 @@ import (
 	"github.com/docker/compose-ecs/utils"
 )
 
-func (b *ecsAPIService) Ps(ctx context.Context, projectName string, options api.PsOptions) ([]api.ContainerSummary, error) {
+func (b *ComposeECS) Ps(ctx context.Context, projectName string, options api.PsOptions) ([]api.ContainerSummary, error) {
 	if err := checkUnsupportedPsOptions(ctx, options); err != nil {
 		return nil, err
 	}

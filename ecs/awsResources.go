@@ -120,7 +120,7 @@ func (r cloudformationARNResource) ID() string {
 }
 
 // parse look into compose project for configured resource to use, and check they are valid
-func (b *ecsAPIService) parse(ctx context.Context, project *types.Project, template *cloudformation.Template) (awsResources, error) {
+func (b *ComposeECS) parse(ctx context.Context, project *types.Project, template *cloudformation.Template) (awsResources, error) {
 	r := awsResources{}
 	var err error
 	r.cluster, err = b.parseClusterExtension(ctx, project, template)
@@ -146,7 +146,7 @@ func (b *ecsAPIService) parse(ctx context.Context, project *types.Project, templ
 	return r, nil
 }
 
-func (b *ecsAPIService) parseClusterExtension(ctx context.Context, project *types.Project, template *cloudformation.Template) (awsResource, error) {
+func (b *ComposeECS) parseClusterExtension(ctx context.Context, project *types.Project, template *cloudformation.Template) (awsResource, error) {
 	if x, ok := project.Extensions[extensionCluster]; ok {
 		nameOrArn := x.(string) // can be name _or_ ARN.
 		cluster, err := b.aws.ResolveCluster(ctx, nameOrArn)
@@ -163,7 +163,7 @@ func (b *ecsAPIService) parseClusterExtension(ctx context.Context, project *type
 	return nil, nil
 }
 
-func (b *ecsAPIService) parseVPCExtension(ctx context.Context, project *types.Project, r *awsResources) error {
+func (b *ComposeECS) parseVPCExtension(ctx context.Context, project *types.Project, r *awsResources) error {
 	var vpc string
 	if x, ok := project.Extensions[extensionVPC]; ok {
 		vpc = x.(string)
@@ -224,7 +224,7 @@ func (b *ecsAPIService) parseVPCExtension(ctx context.Context, project *types.Pr
 	return nil
 }
 
-func (b *ecsAPIService) parseLoadBalancerExtension(ctx context.Context, project *types.Project, r *awsResources) error {
+func (b *ComposeECS) parseLoadBalancerExtension(ctx context.Context, project *types.Project, r *awsResources) error {
 	if x, ok := project.Extensions[extensionLoadBalancer]; ok {
 		nameOrArn := x.(string)
 		loadBalancer, loadBalancerType, vpc, subnets, err := b.aws.ResolveLoadBalancer(ctx, nameOrArn)
@@ -246,7 +246,7 @@ func (b *ecsAPIService) parseLoadBalancerExtension(ctx context.Context, project 
 	return nil
 }
 
-func (b *ecsAPIService) parseExternalNetworks(ctx context.Context, project *types.Project) (map[string]string, error) {
+func (b *ComposeECS) parseExternalNetworks(ctx context.Context, project *types.Project) (map[string]string, error) {
 	securityGroups := make(map[string]string, len(project.Networks))
 	for name, net := range project.Networks {
 		// FIXME remove this for G.A
@@ -273,7 +273,7 @@ func (b *ecsAPIService) parseExternalNetworks(ctx context.Context, project *type
 	return securityGroups, nil
 }
 
-func (b *ecsAPIService) parseExternalVolumes(ctx context.Context, project *types.Project) (map[string]awsResource, error) {
+func (b *ComposeECS) parseExternalVolumes(ctx context.Context, project *types.Project) (map[string]awsResource, error) {
 	filesystems := make(map[string]awsResource, len(project.Volumes))
 	for name, vol := range project.Volumes {
 		if vol.External.External {
@@ -306,7 +306,7 @@ func (b *ecsAPIService) parseExternalVolumes(ctx context.Context, project *types
 }
 
 // ensureResources create required resources in template if not yet defined
-func (b *ecsAPIService) ensureResources(resources *awsResources, project *types.Project, template *cloudformation.Template) error {
+func (b *ComposeECS) ensureResources(resources *awsResources, project *types.Project, template *cloudformation.Template) error {
 	b.ensureCluster(resources, project, template)
 	b.ensureNetworks(resources, project, template)
 	err := b.ensureVolumes(resources, project, template)
@@ -317,7 +317,7 @@ func (b *ecsAPIService) ensureResources(resources *awsResources, project *types.
 	return nil
 }
 
-func (b *ecsAPIService) ensureCluster(r *awsResources, project *types.Project, template *cloudformation.Template) {
+func (b *ComposeECS) ensureCluster(r *awsResources, project *types.Project, template *cloudformation.Template) {
 	if r.cluster != nil {
 		return
 	}
@@ -328,7 +328,7 @@ func (b *ecsAPIService) ensureCluster(r *awsResources, project *types.Project, t
 	r.cluster = cloudformationResource{logicalName: "Cluster"}
 }
 
-func (b *ecsAPIService) ensureNetworks(r *awsResources, project *types.Project, template *cloudformation.Template) {
+func (b *ComposeECS) ensureNetworks(r *awsResources, project *types.Project, template *cloudformation.Template) {
 	if r.securityGroups == nil {
 		r.securityGroups = make(map[string]string, len(project.Networks))
 	}
@@ -355,7 +355,7 @@ func (b *ecsAPIService) ensureNetworks(r *awsResources, project *types.Project, 
 	}
 }
 
-func (b *ecsAPIService) ensureVolumes(r *awsResources, project *types.Project, template *cloudformation.Template) error {
+func (b *ComposeECS) ensureVolumes(r *awsResources, project *types.Project, template *cloudformation.Template) error {
 	for name, volume := range project.Volumes {
 		if _, ok := r.filesystems[name]; ok {
 			continue
@@ -419,7 +419,7 @@ func (b *ecsAPIService) ensureVolumes(r *awsResources, project *types.Project, t
 	return nil
 }
 
-func (b *ecsAPIService) ensureLoadBalancer(r *awsResources, project *types.Project, template *cloudformation.Template) {
+func (b *ComposeECS) ensureLoadBalancer(r *awsResources, project *types.Project, template *cloudformation.Template) {
 	if r.loadBalancer != nil {
 		return
 	}

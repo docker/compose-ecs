@@ -80,7 +80,7 @@ type sdk struct {
 var _ API = sdk{}
 
 // UserAgentName is the ECS specific user agent used by the cli
-const UserAgentName = "Docker CLI"
+const UserAgentName = "Compose ECS"
 
 func newSDK(sess *session.Session) sdk {
 	sess.Handlers.Build.PushBack(func(r *request.Request) {

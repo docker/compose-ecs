@@ -34,7 +34,7 @@ const (
 	placementConstraintMachine = "node.machine == "
 )
 
-func (b *ecsAPIService) createCapacityProvider(ctx context.Context, project *types.Project, template *cloudformation.Template, resources awsResources) error {
+func (b *ComposeECS) createCapacityProvider(ctx context.Context, project *types.Project, template *cloudformation.Template, resources awsResources) error {
 	var (
 		ec2         bool
 		ami         string

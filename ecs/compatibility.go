@@ -25,7 +25,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (b *ecsAPIService) checkCompatibility(project *types.Project) error {
+func (b *ComposeECS) checkCompatibility(project *types.Project) error {
 	var checker compatibility.Checker = &fargateCompatibilityChecker{
 		AllowList: compatibility.AllowList{
 			Supported: compatibleComposeAttributes,
@@ -92,6 +92,7 @@ var compatibleComposeAttributes = []string{
 	"services.ports.mode",
 	"services.ports.target",
 	"services.ports.protocol",
+	"services.scale",
 	"services.secrets",
 	"services.secrets.source",
 	"services.secrets.target",

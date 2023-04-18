@@ -25,7 +25,7 @@ import (
 	"github.com/docker/compose-ecs/utils"
 )
 
-func (b *ecsAPIService) List(ctx context.Context, opts api.ListOptions) ([]api.Stack, error) {
+func (b *ComposeECS) List(ctx context.Context, opts api.ListOptions) ([]api.Stack, error) {
 	if err := checkUnsupportedListOptions(ctx, opts); err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func checkUnsupportedListOptions(ctx context.Context, o api.ListOptions) error {
 	return utils.CheckUnsupported(ctx, nil, o.All, false, "ls", "all")
 }
 
-func (b *ecsAPIService) checkStackState(ctx context.Context, name string) error {
+func (b *ComposeECS) checkStackState(ctx context.Context, name string) error {
 	resources, err := b.aws.ListStackResources(ctx, name)
 	if err != nil {
 		return err
@@ -86,7 +86,7 @@ func (b *ecsAPIService) checkStackState(ctx context.Context, name string) error 
 	return nil
 }
 
-func (b *ecsAPIService) checkServiceState(ctx context.Context, cluster string, service string, taskdef string) error {
+func (b *ComposeECS) checkServiceState(ctx context.Context, cluster string, service string, taskdef string) error {
 	runningTasks, err := b.aws.GetServiceTasks(ctx, cluster, service, false)
 	if err != nil {
 		return err

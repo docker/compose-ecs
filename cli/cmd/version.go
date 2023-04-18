@@ -18,14 +18,10 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"strings"
 
 	"github.com/docker/cli/cli"
-	"github.com/docker/compose/v2/cmd/formatter"
 	"github.com/spf13/cobra"
 
-	"github.com/docker/compose-ecs/cli/mobycli"
 	"github.com/docker/compose-ecs/internal"
 )
 
@@ -48,73 +44,15 @@ func VersionCommand() *cobra.Command {
 	// define flags for backward compatibility with com.docker.cli
 	flags := cmd.Flags()
 	flags.StringP(formatOpt, "f", "", "Format the output. Values: [pretty | json]. (Default: pretty)")
-	flags.String("kubeconfig", "", "Kubernetes config file")
 
 	return cmd
 }
 
 func runVersion(cmd *cobra.Command) error {
-	var versionString string
-	var err error
-	format := strings.ToLower(strings.ReplaceAll(cmd.Flag(formatOpt).Value.String(), " ", ""))
-	// Replace is preferred in this case to keep the order.
-	switch format {
-	case formatter.PRETTY, "":
-		versionString, err = getOutFromMoby(cmd, fixedPrettyArgs(os.Args[1:])...)
-		versionString = strings.Replace(versionString,
-			"\n Version:", "\n Cloud integration: "+internal.Version+"\n Version:", 1)
-	case formatter.JSON, formatter.TemplateLegacyJSON: // Try to catch full JSON formats
-		versionString, err = getOutFromMoby(cmd, fixedJSONArgs(os.Args[1:])...)
-		versionString = strings.Replace(versionString,
-			`"Version":`, fmt.Sprintf(`"CloudIntegration":%q,"Version":`, internal.Version), 1)
-	default:
-		versionString, err = getOutFromMoby(cmd)
+	if formatOpt == "json" {
+		fmt.Printf("{\"version\":%q}\n", internal.Version)
+	} else {
+		fmt.Printf("Compose ECS %s\n", internal.Version)
 	}
-
-	fmt.Print(versionString)
-	return err
-}
-
-func getOutFromMoby(cmd *cobra.Command, args ...string) (string, error) {
-	versionResult, err := mobycli.ExecSilent(cmd.Context(), args...)
-	// we don't want to fail on error, there is an error if the engine is not available but it displays client version info
-	// Still, technically the [] byte versionResult could be nil, just let the original command display what it has to display
-	if versionResult == nil {
-		mobycli.Exec(cmd.Root())
-		return "", nil
-	}
-	return string(versionResult), err
-}
-
-func fixedPrettyArgs(oArgs []string) []string {
-	args := make([]string, 0)
-	for i := 0; i < len(oArgs); i++ {
-		if isFormatOpt(oArgs[i]) &&
-			len(oArgs) > i &&
-			(strings.ToLower(oArgs[i+1]) == formatter.PRETTY || oArgs[i+1] == "") {
-			i++
-			continue
-		}
-		args = append(args, oArgs[i])
-	}
-	return args
-}
-
-func fixedJSONArgs(oArgs []string) []string {
-	args := make([]string, 0)
-	for i := 0; i < len(oArgs); i++ {
-		if isFormatOpt(oArgs[i]) &&
-			len(oArgs) > i &&
-			strings.ToLower(oArgs[i+1]) == formatter.JSON {
-			args = append(args, oArgs[i], "{{json .}}")
-			i++
-			continue
-		}
-		args = append(args, oArgs[i])
-	}
-	return args
-}
-
-func isFormatOpt(o string) bool {
-	return o == "--format" || o == "-f"
+	return nil
 }

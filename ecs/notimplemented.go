@@ -23,74 +23,74 @@ import (
 	"github.com/docker/compose/v2/pkg/api"
 )
 
-func (b *ecsAPIService) Build(ctx context.Context, project *types.Project, options api.BuildOptions) error {
+func (b *ComposeECS) Build(ctx context.Context, project *types.Project, options api.BuildOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Push(ctx context.Context, project *types.Project, options api.PushOptions) error {
+func (b *ComposeECS) Push(ctx context.Context, project *types.Project, options api.PushOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Pull(ctx context.Context, project *types.Project, options api.PullOptions) error {
+func (b *ComposeECS) Pull(ctx context.Context, project *types.Project, options api.PullOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Create(ctx context.Context, project *types.Project, opts api.CreateOptions) error {
+func (b *ComposeECS) Create(ctx context.Context, project *types.Project, opts api.CreateOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Start(ctx context.Context, project *types.Project, options api.StartOptions) error {
+func (b *ComposeECS) Start(ctx context.Context, project *types.Project, options api.StartOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Restart(ctx context.Context, project *types.Project, options api.RestartOptions) error {
+func (b *ComposeECS) Restart(ctx context.Context, project *types.Project, options api.RestartOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Stop(ctx context.Context, project *types.Project, options api.StopOptions) error {
+func (b *ComposeECS) Stop(ctx context.Context, project *types.Project, options api.StopOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Pause(ctx context.Context, project string, options api.PauseOptions) error {
+func (b *ComposeECS) Pause(ctx context.Context, project string, options api.PauseOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) UnPause(ctx context.Context, project string, options api.PauseOptions) error {
+func (b *ComposeECS) UnPause(ctx context.Context, project string, options api.PauseOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Events(ctx context.Context, project string, options api.EventsOptions) error {
+func (b *ComposeECS) Events(ctx context.Context, project string, options api.EventsOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Port(ctx context.Context, project string, service string, port int, options api.PortOptions) (string, int, error) {
+func (b *ComposeECS) Port(ctx context.Context, project string, service string, port int, options api.PortOptions) (string, int, error) {
 	return "", 0, api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Copy(ctx context.Context, project *types.Project, options api.CopyOptions) error {
+func (b *ComposeECS) Copy(ctx context.Context, project *types.Project, options api.CopyOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) RunOneOffContainer(ctx context.Context, project *types.Project, opts api.RunOptions) (int, error) {
+func (b *ComposeECS) RunOneOffContainer(ctx context.Context, project *types.Project, opts api.RunOptions) (int, error) {
 	return 0, api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Remove(ctx context.Context, project *types.Project, options api.RemoveOptions) error {
+func (b *ComposeECS) Remove(ctx context.Context, project *types.Project, options api.RemoveOptions) error {
 	return api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Images(ctx context.Context, projectName string, options api.ImagesOptions) ([]api.ImageSummary, error) {
+func (b *ComposeECS) Images(ctx context.Context, projectName string, options api.ImagesOptions) ([]api.ImageSummary, error) {
 	return nil, api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Top(ctx context.Context, projectName string, services []string) ([]api.ContainerProcSummary, error) {
+func (b *ComposeECS) Top(ctx context.Context, projectName string, services []string) ([]api.ContainerProcSummary, error) {
 	return nil, api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Exec(ctx context.Context, project string, opts api.RunOptions) (int, error) {
+func (b *ComposeECS) Exec(ctx context.Context, project string, opts api.RunOptions) (int, error) {
 	return 0, api.ErrNotImplemented
 }
 
-func (b *ecsAPIService) Kill(ctx context.Context, project *types.Project, options api.KillOptions) error {
+func (b *ComposeECS) Kill(ctx context.Context, project *types.Project, options api.KillOptions) error {
 	return api.ErrNotImplemented
 }

@@ -17,6 +17,8 @@ GOARCH?=$(shell go env GOARCH)
 
 PKG_NAME := github.com/docker/compose-ecs
 
+GO_LDFLAGS ?= -s -w -X ${PKG}/internal.Version=${VERSION} -X ${PKG}/internal.GitCommit=${COMMIT}
+
 PROTOS=$(shell find cli/server/protos -name \*.proto)
 
 EXTENSION:=
@@ -31,7 +33,7 @@ GIT_TAG?=$(shell git describe --tags --match "v[0-9]*")
 LDFLAGS="-s -w -X $(PKG_NAME)/internal.Version=${GIT_TAG}"
 GO_BUILD=$(STATIC_FLAGS) go build -trimpath -ldflags=$(LDFLAGS)
 
-BINARY?=bin/docker
+BINARY?=bin/compose-ecs
 BINARY_WITH_EXTENSION=$(BINARY)$(EXTENSION)
 
 COMPOSE_BINARY?=bin/docker-compose

@@ -22,18 +22,18 @@ import (
 	"github.com/docker/compose-ecs/api/secrets"
 )
 
-func (b *ecsAPIService) CreateSecret(ctx context.Context, secret secrets.Secret) (string, error) {
+func (b *ComposeECS) CreateSecret(ctx context.Context, secret secrets.Secret) (string, error) {
 	return b.aws.CreateSecret(ctx, secret)
 }
 
-func (b *ecsAPIService) InspectSecret(ctx context.Context, id string) (secrets.Secret, error) {
+func (b *ComposeECS) InspectSecret(ctx context.Context, id string) (secrets.Secret, error) {
 	return b.aws.InspectSecret(ctx, id)
 }
 
-func (b *ecsAPIService) ListSecrets(ctx context.Context) ([]secrets.Secret, error) {
+func (b *ComposeECS) ListSecrets(ctx context.Context) ([]secrets.Secret, error) {
 	return b.aws.ListSecrets(ctx)
 }
 
-func (b *ecsAPIService) DeleteSecret(ctx context.Context, id string, recover bool) error {
+func (b *ComposeECS) DeleteSecret(ctx context.Context, id string, recover bool) error {
 	return b.aws.DeleteSecret(ctx, id, recover)
 }

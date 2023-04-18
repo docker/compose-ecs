@@ -29,7 +29,7 @@ import (
 	"github.com/docker/compose-ecs/api/volumes"
 )
 
-func (b *ecsAPIService) createNFSMountTarget(project *types.Project, resources awsResources, template *cloudformation.Template) {
+func (b *ComposeECS) createNFSMountTarget(project *types.Project, resources awsResources, template *cloudformation.Template) {
 	for volume := range project.Volumes {
 		for _, subnet := range resources.subnets {
 			name := fmt.Sprintf("%sNFSMountTargetOn%s", normalizeResourceName(volume), normalizeResourceName(subnet.ID()))
@@ -42,7 +42,7 @@ func (b *ecsAPIService) createNFSMountTarget(project *types.Project, resources a
 	}
 }
 
-func (b *ecsAPIService) mountTargets(volume string, resources awsResources) []string {
+func (b *ComposeECS) mountTargets(volume string, resources awsResources) []string {
 	var refs []string
 	for _, subnet := range resources.subnets {
 		refs = append(refs, fmt.Sprintf("%sNFSMountTargetOn%s", normalizeResourceName(volume), normalizeResourceName(subnet.ID())))
@@ -50,7 +50,7 @@ func (b *ecsAPIService) mountTargets(volume string, resources awsResources) []st
 	return refs
 }
 
-func (b *ecsAPIService) createAccessPoints(project *types.Project, r awsResources, template *cloudformation.Template) {
+func (b *ComposeECS) createAccessPoints(project *types.Project, r awsResources, template *cloudformation.Template) {
 	for name, volume := range project.Volumes {
 		n := fmt.Sprintf("%sAccessPoint", normalizeResourceName(name))
 
@@ -110,7 +110,7 @@ type VolumeCreateOptions struct {
 }
 
 type ecsVolumeService struct {
-	backend *ecsAPIService
+	backend *ComposeECS
 }
 
 func (e ecsVolumeService) List(ctx context.Context) ([]volumes.Volume, error) {

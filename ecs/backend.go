@@ -17,145 +17,44 @@
 package ecs
 
 import (
-	"context"
-	"fmt"
+	"os"
 
-	"github.com/docker/compose-ecs/api/backend"
-	"github.com/docker/compose-ecs/api/cloud"
-	"github.com/docker/compose-ecs/api/containers"
-	apicontext "github.com/docker/compose-ecs/api/context"
-	"github.com/docker/compose-ecs/api/context/store"
-	"github.com/docker/compose-ecs/api/resources"
 	"github.com/docker/compose-ecs/api/secrets"
 	"github.com/docker/compose-ecs/api/volumes"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/docker/compose/v2/pkg/api"
 )
 
-const backendType = store.EcsContextType
-
-// ContextParams options for creating AWS context
-type ContextParams struct {
-	Name         string
-	Description  string
-	AccessKey    string
-	SecretKey    string
-	Profile      string
-	Region       string
-	CredsFromEnv bool
-}
-
-func (c ContextParams) haveRequiredEnvVars() bool {
-	if c.Profile != "" {
-		return true
-	}
-	if c.AccessKey != "" && c.SecretKey != "" {
-		return true
-	}
-	return false
-}
-
-func init() {
-	backend.Register(backendType, backendType, service, getCloudService)
-}
-
-func service() (backend.Service, error) {
-	contextStore := store.Instance()
-	currentContext := apicontext.Current()
-	var ecsContext store.EcsContext
-
-	if err := contextStore.GetEndpoint(currentContext, &ecsContext); err != nil {
-		return nil, err
-	}
-
-	return getEcsAPIService(ecsContext)
-}
-
-func getEcsAPIService(ecsCtx store.EcsContext) (*ecsAPIService, error) {
-	region := ""
-	profile := ecsCtx.Profile
-
-	if ecsCtx.CredentialsFromEnv {
-		env := getEnvVars()
-		if !env.haveRequiredEnvVars() {
-			return nil, fmt.Errorf("context requires credentials to be passed as environment variables")
-		}
-		profile = env.Profile
-		region = env.Region
-	}
-
-	if region == "" {
-		r, err := getRegion(profile)
-		if err != nil {
-			return nil, err
-		}
-		region = r
-	}
-
+func NewComposeECS() (*ComposeECS, error) {
 	sess, err := session.NewSessionWithOptions(session.Options{
-		Profile:           profile,
 		SharedConfigState: session.SharedConfigEnable,
-		Config: aws.Config{
-			Region: aws.String(region),
-		},
+		Profile:           os.Getenv("AWS_PROFILE"),
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	sdk := newSDK(sess)
-	return &ecsAPIService{
-		ctx:    ecsCtx,
-		Region: region,
+	return &ComposeECS{
+		Region: *sess.Config.Region,
 		aws:    sdk,
 	}, nil
 }
 
-type ecsAPIService struct {
-	ctx    store.EcsContext
+type ComposeECS struct {
 	Region string
 	aws    API
 }
 
-func (b *ecsAPIService) ContainerService() containers.Service {
-	return nil
-}
-
-func (b *ecsAPIService) ComposeService() api.Service {
+func (b *ComposeECS) ComposeService() api.Service {
 	return b
 }
 
-func (b *ecsAPIService) SecretsService() secrets.Service {
+func (b *ComposeECS) SecretsService() secrets.Service {
 	return b
 }
 
-func (b *ecsAPIService) VolumeService() volumes.Service {
+func (b *ComposeECS) VolumeService() volumes.Service {
 	return ecsVolumeService{backend: b}
-}
-
-func (b *ecsAPIService) ResourceService() resources.Service {
-	return nil
-}
-
-func getCloudService() (cloud.Service, error) {
-	return ecsCloudService{}, nil
-}
-
-type ecsCloudService struct {
-}
-
-func (a ecsCloudService) Login(ctx context.Context, params interface{}) error {
-	return api.ErrNotImplemented
-}
-
-func (a ecsCloudService) Logout(ctx context.Context) error {
-	return api.ErrNotImplemented
-}
-
-func (a ecsCloudService) CreateContextData(ctx context.Context, params interface{}) (interface{}, string, error) {
-	contextHelper := newContextCreateHelper()
-	createOpts := params.(ContextParams)
-	return contextHelper.createContextData(ctx, createOpts)
 }

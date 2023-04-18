@@ -24,7 +24,7 @@ import (
 	"github.com/docker/compose-ecs/utils"
 )
 
-func (b *ecsAPIService) Logs(ctx context.Context, projectName string, consumer api.LogConsumer, options api.LogOptions) error {
+func (b *ComposeECS) Logs(ctx context.Context, projectName string, consumer api.LogConsumer, options api.LogOptions) error {
 	if err := checkUnsupportedLogOptions(ctx, options); err != nil {
 		return err
 	}

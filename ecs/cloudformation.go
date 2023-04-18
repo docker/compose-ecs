@@ -43,11 +43,10 @@ import (
 	"sigs.k8s.io/kustomize/kyaml/yaml"
 	"sigs.k8s.io/kustomize/kyaml/yaml/merge2"
 
-	"github.com/docker/compose-ecs/api/config"
 	"github.com/docker/compose-ecs/utils"
 )
 
-func (b *ecsAPIService) Convert(ctx context.Context, project *types.Project, options api.ConvertOptions) ([]byte, error) {
+func (b *ComposeECS) Convert(ctx context.Context, project *types.Project, options api.ConvertOptions) ([]byte, error) {
 	if err := checkUnsupportedConvertOptions(ctx, options); err != nil {
 		return nil, err
 	}
@@ -106,8 +105,8 @@ func checkUnsupportedConvertOptions(ctx context.Context, o api.ConvertOptions) e
 	return utils.CheckUnsupported(ctx, nil, o.Output, "", "convert", "output")
 }
 
-func (b *ecsAPIService) resolveServiceImagesDigests(ctx context.Context, project *types.Project) error {
-	configFile, err := cliconfig.Load(config.Dir())
+func (b *ComposeECS) resolveServiceImagesDigests(ctx context.Context, project *types.Project) error {
+	configFile, err := cliconfig.Load(cliconfig.Dir())
 	if err != nil {
 		return err
 	}
@@ -119,7 +118,7 @@ func (b *ecsAPIService) resolveServiceImagesDigests(ctx context.Context, project
 	})
 }
 
-func (b *ecsAPIService) convert(ctx context.Context, project *types.Project) (*cloudformation.Template, error) {
+func (b *ComposeECS) convert(ctx context.Context, project *types.Project) (*cloudformation.Template, error) {
 	err := b.checkCompatibility(project)
 	if err != nil {
 		return nil, err
@@ -172,7 +171,7 @@ func (b *ecsAPIService) convert(ctx context.Context, project *types.Project) (*c
 	return template, nil
 }
 
-func (b *ecsAPIService) createService(project *types.Project, service types.ServiceConfig, template *cloudformation.Template, resources awsResources) error {
+func (b *ComposeECS) createService(project *types.Project, service types.ServiceConfig, template *cloudformation.Template, resources awsResources) error {
 	taskExecutionRole := b.createTaskExecutionRole(project, service, template)
 	taskRole, err := b.createTaskRole(project, service, template, resources)
 	if err != nil {
@@ -278,7 +277,7 @@ func (b *ecsAPIService) createService(project *types.Project, service types.Serv
 
 const allProtocols = "-1"
 
-func (b *ecsAPIService) createIngress(service types.ServiceConfig, net string, port types.ServicePortConfig, template *cloudformation.Template, resources awsResources) {
+func (b *ComposeECS) createIngress(service types.ServiceConfig, net string, port types.ServicePortConfig, template *cloudformation.Template, resources awsResources) {
 	protocol := strings.ToUpper(port.Protocol)
 	if protocol == "" {
 		protocol = allProtocols
@@ -294,7 +293,7 @@ func (b *ecsAPIService) createIngress(service types.ServiceConfig, net string, p
 	}
 }
 
-func (b *ecsAPIService) createSecret(project *types.Project, name string, s types.SecretConfig, template *cloudformation.Template) error {
+func (b *ComposeECS) createSecret(project *types.Project, name string, s types.SecretConfig, template *cloudformation.Template) error {
 	if s.External.External {
 		return nil
 	}
@@ -314,7 +313,7 @@ func (b *ecsAPIService) createSecret(project *types.Project, name string, s type
 	return nil
 }
 
-func (b *ecsAPIService) createLogGroup(project *types.Project, template *cloudformation.Template) {
+func (b *ComposeECS) createLogGroup(project *types.Project, template *cloudformation.Template) {
 	retention := 0
 	if v, ok := project.Extensions[extensionRetention]; ok {
 		retention = v.(int)
@@ -366,7 +365,7 @@ func computeRollingUpdateLimits(service types.ServiceConfig) (int, int, error) {
 	return minPercent, maxPercent, nil
 }
 
-func (b *ecsAPIService) createListener(service types.ServiceConfig, port types.ServicePortConfig,
+func (b *ComposeECS) createListener(service types.ServiceConfig, port types.ServicePortConfig,
 	template *cloudformation.Template,
 	targetGroupName string, loadBalancer awsResource, protocol string) string {
 	listenerName := fmt.Sprintf(
@@ -397,7 +396,7 @@ func (b *ecsAPIService) createListener(service types.ServiceConfig, port types.S
 	return listenerName
 }
 
-func (b *ecsAPIService) createTargetGroup(project *types.Project, service types.ServiceConfig, port types.ServicePortConfig, template *cloudformation.Template, protocol string, vpc string) string {
+func (b *ComposeECS) createTargetGroup(project *types.Project, service types.ServiceConfig, port types.ServicePortConfig, template *cloudformation.Template, protocol string, vpc string) string {
 	targetGroupName := fmt.Sprintf(
 		"%s%s%dTargetGroup",
 		normalizeResourceName(service.Name),
@@ -414,7 +413,7 @@ func (b *ecsAPIService) createTargetGroup(project *types.Project, service types.
 	return targetGroupName
 }
 
-func (b *ecsAPIService) createServiceRegistry(service types.ServiceConfig, template *cloudformation.Template, healthCheck *cloudmap.Service_HealthCheckConfig) ecs.Service_ServiceRegistry {
+func (b *ComposeECS) createServiceRegistry(service types.ServiceConfig, template *cloudformation.Template, healthCheck *cloudmap.Service_HealthCheckConfig) ecs.Service_ServiceRegistry {
 	serviceRegistration := fmt.Sprintf("%sServiceDiscoveryEntry", normalizeResourceName(service.Name))
 	serviceRegistry := ecs.Service_ServiceRegistry{
 		RegistryArn: cloudformation.GetAtt(serviceRegistration, "Arn"),
@@ -441,7 +440,7 @@ func (b *ecsAPIService) createServiceRegistry(service types.ServiceConfig, templ
 	return serviceRegistry
 }
 
-func (b *ecsAPIService) createTaskExecutionRole(project *types.Project, service types.ServiceConfig, template *cloudformation.Template) string {
+func (b *ComposeECS) createTaskExecutionRole(project *types.Project, service types.ServiceConfig, template *cloudformation.Template) string {
 	taskExecutionRole := fmt.Sprintf("%sTaskExecutionRole", normalizeResourceName(service.Name))
 	policies := b.createPolicies(project, service)
 	template.Resources[taskExecutionRole] = &iam.Role{
@@ -456,7 +455,7 @@ func (b *ecsAPIService) createTaskExecutionRole(project *types.Project, service 
 	return taskExecutionRole
 }
 
-func (b *ecsAPIService) createTaskRole(project *types.Project, service types.ServiceConfig, template *cloudformation.Template, resources awsResources) (string, error) {
+func (b *ComposeECS) createTaskRole(project *types.Project, service types.ServiceConfig, template *cloudformation.Template, resources awsResources) (string, error) {
 	taskRole := fmt.Sprintf("%sTaskRole", normalizeResourceName(service.Name))
 	rolePolicies := []iam.Role_Policy{}
 	if roles, ok := service.Extensions[extensionRole]; ok {
@@ -496,7 +495,7 @@ func (b *ecsAPIService) createTaskRole(project *types.Project, service types.Ser
 	return taskRole, nil
 }
 
-func (b *ecsAPIService) createCloudMap(project *types.Project, template *cloudformation.Template, vpc string) {
+func (b *ComposeECS) createCloudMap(project *types.Project, template *cloudformation.Template, vpc string) {
 	template.Resources["CloudMap"] = &cloudmap.PrivateDnsNamespace{
 		Description: fmt.Sprintf("Service Map for Docker Compose project %s", project.Name),
 		Name:        fmt.Sprintf("%s.local", project.Name),
@@ -504,7 +503,7 @@ func (b *ecsAPIService) createCloudMap(project *types.Project, template *cloudfo
 	}
 }
 
-func (b *ecsAPIService) createPolicies(project *types.Project, service types.ServiceConfig) []iam.Role_Policy {
+func (b *ComposeECS) createPolicies(project *types.Project, service types.ServiceConfig) []iam.Role_Policy {
 	var arns []string
 	if value, ok := service.Extensions[extensionPullCredentials]; ok {
 		arns = append(arns, value.(string))
