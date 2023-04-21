@@ -75,7 +75,7 @@ RUN --mount=target=. \
     GOARCH=${TARGETARCH} \
     BUILD_TAGS=${BUILD_TAGS} \
     GIT_TAG=${GIT_TAG} \
-    make BINARY=/out/docker -f builder.Makefile cli
+    make BINARY=/out/compose-ecs -f builder.Makefile cli
 
 FROM base AS make-cross
 ARG BUILD_TAGS
