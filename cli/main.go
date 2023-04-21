@@ -23,14 +23,13 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/docker/compose-ecs/ecs"
-	compose2 "github.com/docker/compose/v2/cmd/compose"
+	"github.com/docker/compose/v2/cmd/compose"
 	"github.com/spf13/cobra"
 
 	"github.com/docker/compose-ecs/api/backend"
 	"github.com/docker/compose-ecs/cli/cmd"
 	"github.com/docker/compose-ecs/cli/cmd/volume"
-	// Backend registrations
+	"github.com/docker/compose-ecs/ecs"
 )
 
 func main() {
@@ -63,7 +62,7 @@ func main() {
 	}
 	backend.WithBackend(service)
 
-	command := compose2.RootCommand(service.ComposeService())
+	command := compose.RootCommand(service.ComposeService())
 
 	for _, c := range command.Commands() {
 		switch c.Name() {

@@ -19,7 +19,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/docker/cli/cli"
 	"github.com/spf13/cobra"
 
 	"github.com/docker/compose-ecs/internal"
@@ -34,10 +33,7 @@ func VersionCommand() *cobra.Command {
 		Short: "Show the Docker version information",
 		Args:  cobra.MaximumNArgs(0),
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			err := runVersion(cmd)
-			if err != nil {
-				return cli.StatusError{StatusCode: 1, Status: err.Error()}
-			}
+			runVersion()
 			return nil
 		},
 	}
@@ -48,11 +44,10 @@ func VersionCommand() *cobra.Command {
 	return cmd
 }
 
-func runVersion(cmd *cobra.Command) error {
+func runVersion() {
 	if formatOpt == "json" {
 		fmt.Printf("{\"version\":%q}\n", internal.Version)
 	} else {
 		fmt.Printf("Compose ECS %s\n", internal.Version)
 	}
-	return nil
 }

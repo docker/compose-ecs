@@ -17,9 +17,10 @@
 package backend
 
 import (
+	"github.com/docker/compose/v2/pkg/api"
+
 	"github.com/docker/compose-ecs/api/secrets"
 	"github.com/docker/compose-ecs/api/volumes"
-	"github.com/docker/compose/v2/pkg/api"
 )
 
 var instance Service

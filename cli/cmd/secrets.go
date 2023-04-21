@@ -22,10 +22,10 @@ import (
 	"os"
 
 	"github.com/docker/compose-ecs/api/backend"
+	"github.com/docker/compose-ecs/api/secrets"
+
 	"github.com/docker/compose/v2/cmd/formatter"
 	"github.com/spf13/cobra"
-
-	"github.com/docker/compose-ecs/api/secrets"
 )
 
 // SecretCommand manage secrets

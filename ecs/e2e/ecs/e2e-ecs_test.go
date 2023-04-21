@@ -32,8 +32,6 @@ import (
 	"gotest.tools/v3/poll"
 )
 
-var binDir string
-
 func TestSecrets(t *testing.T) {
 	startTime := strconv.Itoa(int(time.Now().UnixNano()))
 	secretName := "secret" + strings.ToLower(t.Name()) + startTime
