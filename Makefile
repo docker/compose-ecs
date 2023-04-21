@@ -53,9 +53,6 @@ e2e-win-ci: ## Run end to end local tests on Windows CI, no Docker for Linux con
 e2e-kube: ## Run End to end Kube tests. Set E2E_TEST=TestName to run a single test
 	go test -timeout 10m -count=1 -v $(TEST_FLAGS) ./kube/e2e
 
-e2e-aci: ## Run End to end ACI tests. Set E2E_TEST=TestName to run a single test
-	go test -timeout 20m -count=1 -v $(TEST_FLAGS) ./aci/e2e
-
 e2e-ecs: ## Run End to end ECS tests. Set E2E_TEST=TestName to run a single test
 	go test -timeout 30m -count=1 -v $(TEST_FLAGS) ./ecs/e2e/ecs ./ecs/e2e/ecs-local
 
@@ -109,12 +106,6 @@ validate: validate-go-mod validate-headers ## Validate sources
 
 pre-commit: validate import-restrictions check-dependencies lint cli test e2e-local
 
-build-aci-sidecar:  ## build aci sidecar image locally and tag it with make build-aci-sidecar tag=0.1
-	docker build -t docker/aci-hostnames-sidecar:$(tag) aci/etchosts
-
-publish-aci-sidecar: build-aci-sidecar ## build & publish aci sidecar image with make publish-aci-sidecar tag=0.1
-	docker pull docker/aci-hostnames-sidecar:$(tag) && echo "Failure: Tag already exists" || docker push docker/aci-hostnames-sidecar:$(tag)
-
 build-ecs-search-sidecar:  ## build ecs search sidecar image locally and tag it with make build-ecs-search-sidecar tag=0.1
 	docker buildx build --platform linux/amd64,linux/arm64 -t docker/ecs-searchdomain-sidecar:$(tag) ecs/resolv
 
@@ -127,15 +118,10 @@ build-ecs-secrets-sidecar:  ## build ecs secrets sidecar image locally and tag i
 publish-ecs-secrets-sidecar: build-ecs-secrets-sidecar ## build & publish ecs secrets sidecar image with make publish-ecs-secrets-sidecar tag=0.1
 	docker pull docker/ecs-secrets-sidecar:$(tag) && echo "Failure: Tag already exists" || docker buildx build --push --platform linux/amd64,linux/arm64 -t docker/ecs-secrets-sidecar:$(tag) ecs/secrets
 
-clean-aci-e2e: ## Make sure no ACI tests are currently runnnig in the CI when invoking this. Delete ACI E2E tests resources that might have leaked when ctrl-C E2E tests.
-	@ echo "Will delete resource groups: "
-	@ az group list | jq '.[].name' | grep -i E2E-Test
-	az group list | jq '.[].name' | grep -i E2E-Test | xargs -n1 az group delete -y --no-wait -g
-
 help: ## Show help
 	@echo Please specify a build target. The choices are:
 	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 FORCE:
 
-.PHONY: all validate protos cli e2e-local cross test cache-clear lint check-dependencies serve classic-link help clean-aci-e2e go-mod-tidy
+.PHONY: all validate protos cli e2e-local cross test cache-clear lint check-dependencies serve classic-link help go-mod-tidy
