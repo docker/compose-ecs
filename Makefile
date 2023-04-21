@@ -33,10 +33,6 @@ endif
 
 all: cli
 
-protos: ## Generate go code from .proto files
-	@docker build . --target protos \
-	--output ./cli/server/protos
-
 cli: ## Compile the cli
 	@docker build . --target cli \
 	--platform local \
@@ -44,14 +40,8 @@ cli: ## Compile the cli
 	--build-arg GIT_TAG=$(GIT_TAG) \
 	--output ./bin
 
-e2e-local: ## Run End to end local tests. Set E2E_TEST=TestName to run a single test
-	gotestsum $(TEST_FLAGS) ./local/e2e/container ./local/e2e/cli-only -- -count=1
-
 e2e-win-ci: ## Run end to end local tests on Windows CI, no Docker for Linux containers available ATM. Set E2E_TEST=TestName to run a single test
 	go test -count=1 -v $(TEST_FLAGS) ./local/e2e/cli-only
-
-e2e-kube: ## Run End to end Kube tests. Set E2E_TEST=TestName to run a single test
-	go test -timeout 10m -count=1 -v $(TEST_FLAGS) ./kube/e2e
 
 e2e-ecs: ## Run End to end ECS tests. Set E2E_TEST=TestName to run a single test
 	go test -timeout 30m -count=1 -v $(TEST_FLAGS) ./ecs/e2e/ecs ./ecs/e2e/ecs-local
@@ -84,15 +74,6 @@ import-restrictions: ## run import-restrictions script
 	@docker build . \
 	--target import-restrictions
 
-serve: cli ## start server
-	@./bin/docker serve --address unix:///tmp/backend.sock
-
-moby-cli-link: ## Create com.docker.cli symlink if does not already exist
-	ln -s $(MOBY_DOCKER) /usr/local/bin/com.docker.cli
-
-install: ## Link /usr/local/bin/ to current binary
-	ln -fs $(BINARY_FOLDER)/docker /usr/local/bin/docker
-
 validate-headers: ## Check license header for all files
 	@docker build . --target check-license-headers
 
@@ -124,4 +105,4 @@ help: ## Show help
 
 FORCE:
 
-.PHONY: all validate protos cli e2e-local cross test cache-clear lint check-dependencies serve classic-link help go-mod-tidy
+.PHONY: all validate cli cross test cache-clear lint check-dependencies help go-mod-tidy
