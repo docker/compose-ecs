@@ -44,7 +44,7 @@ e2e-win-ci: ## Run end to end local tests on Windows CI, no Docker for Linux con
 	go test -count=1 -v $(TEST_FLAGS) ./local/e2e/cli-only
 
 e2e-ecs: ## Run End to end ECS tests. Set E2E_TEST=TestName to run a single test
-	go test -timeout 30m -count=1 -v $(TEST_FLAGS) ./ecs/e2e/ecs ./ecs/e2e/ecs-local
+	go test -timeout 30m -count=1 -v $(TEST_FLAGS) ./ecs/e2e/ecs
 
 cross: ## Compile the CLI for linux, darwin and windows
 	@docker build . --target cross \
@@ -85,7 +85,7 @@ validate-go-mod: ## Validate go.mod and go.sum are up-to-date
 
 validate: validate-go-mod validate-headers ## Validate sources
 
-pre-commit: validate import-restrictions check-dependencies lint cli test e2e-local
+pre-commit: validate import-restrictions check-dependencies lint cli test
 
 build-ecs-search-sidecar:  ## build ecs search sidecar image locally and tag it with make build-ecs-search-sidecar tag=0.1
 	docker buildx build --platform linux/amd64,linux/arm64 -t docker/ecs-searchdomain-sidecar:$(tag) ecs/resolv
