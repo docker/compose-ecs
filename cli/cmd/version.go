@@ -34,7 +34,7 @@ func VersionCommand() *cobra.Command {
 		Short: "Show the Docker version information",
 		Args:  cobra.MaximumNArgs(0),
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			err := runVersion(cmd)
+			err := runVersion()
 			if err != nil {
 				return cli.StatusError{StatusCode: 1, Status: err.Error()}
 			}
@@ -48,7 +48,7 @@ func VersionCommand() *cobra.Command {
 	return cmd
 }
 
-func runVersion(cmd *cobra.Command) error {
+func runVersion() error {
 	if formatOpt == "json" {
 		fmt.Printf("{\"version\":%q}\n", internal.Version)
 	} else {
