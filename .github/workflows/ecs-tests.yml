@@ -23,11 +23,6 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: true
 
-      - name: Setup docker CLI
-        run: |
-          curl https://download.docker.com/linux/static/stable/x86_64/docker-20.10.3.tgz | tar xz
-          sudo cp ./docker/docker /usr/bin/ && rm -rf docker && docker version
-
       - name: Build for ECS e2e tests
         run: make -f builder.Makefile cli
 

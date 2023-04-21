@@ -18,6 +18,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -29,63 +30,47 @@ import (
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/icmd"
 	"gotest.tools/v3/poll"
-
-	. "github.com/docker/compose-ecs/utils/e2e"
 )
 
 var binDir string
 
-func TestMain(m *testing.M) {
-	p, cleanup, err := SetupExistingCLI()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	binDir = p
-	exitCode := m.Run()
-	cleanup()
-	os.Exit(exitCode)
-}
-
 func TestSecrets(t *testing.T) {
-	cmd, testID := setupTest(t)
-	secretName := "secret" + testID
-
+	startTime := strconv.Itoa(int(time.Now().UnixNano()))
+	secretName := "secret" + strings.ToLower(t.Name()) + startTime
 	t.Run("create secret", func(t *testing.T) {
-		secretFile := filepath.Join(cmd.BinDir, "secret.txt")
+		secretFile := filepath.Join(t.TempDir(), "secret.txt")
 		err := os.WriteFile(secretFile, []byte("pass1"), 0644)
 		assert.Check(t, err == nil)
-		res := cmd.RunDockerCmd("secret", "create", secretName, secretFile)
+		res := icmd.RunCommand("compose-ecs", "secret", "create", secretName, secretFile)
 		assert.Check(t, strings.Contains(res.Stdout(), secretName), res.Stdout())
 	})
 
 	t.Run("list secrets", func(t *testing.T) {
-		res := cmd.RunDockerCmd("secret", "list")
+		res := icmd.RunCommand("compose-ecs", "secret", "list")
 		assert.Check(t, strings.Contains(res.Stdout(), secretName), res.Stdout())
 	})
 
 	t.Run("inspect secret", func(t *testing.T) {
-		res := cmd.RunDockerCmd("secret", "inspect", secretName)
+		res := icmd.RunCommand("compose-ecs", "secret", "inspect", secretName)
 		assert.Check(t, strings.Contains(res.Stdout(), `"Name": "`+secretName+`"`), res.Stdout())
 	})
 
 	t.Run("rm secret", func(t *testing.T) {
-		cmd.RunDockerCmd("secret", "rm", secretName)
-		res := cmd.RunDockerCmd("secret", "list")
+		icmd.RunCommand("compose-ecs", "secret", "rm", secretName)
+		res := icmd.RunCommand("secret", "list")
 		assert.Check(t, !strings.Contains(res.Stdout(), secretName), res.Stdout())
 	})
 }
 
 func TestCompose(t *testing.T) {
-	c, stack := setupTest(t)
-
-	t.Run("compose up", func(t *testing.T) {
-		c.RunDockerCmd("compose", "--project-name", stack, "-f", "./multi_port_secrets.yaml", "up")
+	t.Run("compose-ecs up", func(t *testing.T) {
+		res := icmd.RunCommand("compose-ecs", "up")
+		res.Assert(t, icmd.Success)
 	})
 
 	var webURL, wordsURL, secretsURL string
-	t.Run("compose ps", func(t *testing.T) {
-		res := c.RunDockerCmd("compose", "--project-name", stack, "ps")
+	t.Run("compose-ecs ps", func(t *testing.T) {
+		res := icmd.RunCommand("compose-ecs", "ps")
 		lines := strings.Split(strings.TrimSpace(res.Stdout()), "\n")
 
 		assert.Equal(t, 5, len(lines))
@@ -123,17 +108,6 @@ func TestCompose(t *testing.T) {
 		assert.Check(t, secretsDisplayed)
 	})
 
-	t.Run("compose ls", func(t *testing.T) {
-		res := c.RunDockerCmd("compose", "ls", "--filter", "name="+stack)
-		lines := strings.Split(strings.TrimSpace(res.Stdout()), "\n")
-
-		assert.Equal(t, 2, len(lines))
-		fields := strings.Fields(lines[1])
-		assert.Equal(t, 2, len(fields))
-		assert.Equal(t, fields[0], stack)
-		assert.Equal(t, "Running", fields[1])
-	})
-
 	t.Run("Words GET validating cross service connection", func(t *testing.T) {
 		out := HTTPGetWithRetry(t, wordsURL, http.StatusOK, 5*time.Second, 300*time.Second)
 		assert.Assert(t, strings.Contains(out, `"word":`))
@@ -153,9 +127,8 @@ func TestCompose(t *testing.T) {
 		assert.Equal(t, out, "myPassword1\n")
 	})
 
-	t.Run("compose down", func(t *testing.T) {
-		cmd := c.NewDockerCmd("compose", "--project-name", stack, "down")
-		res := icmd.StartCmd(cmd)
+	t.Run("compose-ecs down", func(t *testing.T) {
+		res := icmd.RunCommand("compose-ecs", "down")
 
 		checkUp := func(t poll.LogT) poll.Result {
 			out := res.Combined()
@@ -168,30 +141,40 @@ func TestCompose(t *testing.T) {
 	})
 }
 
-func setupTest(t *testing.T) (*E2eCLI, string) {
-	startTime := strconv.Itoa(int(time.Now().UnixNano()))
-	c := NewParallelE2eCLI(t, binDir)
-	contextName := "e2e" + strings.ToLower(t.Name()) + startTime
-	stack := contextName
-	t.Run("create context", func(t *testing.T) {
-		localTestProfile := os.Getenv("TEST_AWS_PROFILE")
-		var res *icmd.Result
-		if localTestProfile != "" {
-			res = c.RunDockerCmd("context", "create", "ecs", contextName, "--profile", localTestProfile)
-		} else {
-			region := os.Getenv("AWS_DEFAULT_REGION")
-			secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
-			keyID := os.Getenv("AWS_ACCESS_KEY_ID")
-			assert.Check(t, keyID != "")
-			assert.Check(t, secretKey != "")
-			assert.Check(t, region != "")
-			res = c.RunDockerCmd("context", "create", "ecs", contextName, "--from-env")
+// HTTPGetWithRetry performs an HTTP GET on an `endpoint`, using retryDelay also as a request timeout.
+// In the case of an error or the response status is not the expected one, it retries the same request,
+// returning the response body as a string (empty if we could not reach it)
+func HTTPGetWithRetry(
+	t testing.TB,
+	endpoint string,
+	expectedStatus int,
+	retryDelay time.Duration,
+	timeout time.Duration,
+) string {
+	t.Helper()
+	var (
+		r   *http.Response
+		err error
+	)
+	client := &http.Client{
+		Timeout: retryDelay,
+	}
+	fmt.Printf("\t[%s] GET %s\n", t.Name(), endpoint)
+	checkUp := func(t poll.LogT) poll.Result {
+		r, err = client.Get(endpoint)
+		if err != nil {
+			return poll.Continue("reaching %q: Error %s", endpoint, err.Error())
 		}
-		res.Assert(t, icmd.Expected{Out: "Successfully created ecs context \"" + contextName + "\""})
-		res = c.RunDockerCmd("context", "use", contextName)
-		res.Assert(t, icmd.Expected{Out: contextName})
-		res = c.RunDockerCmd("context", "ls")
-		res.Assert(t, icmd.Expected{Out: contextName + " *"})
-	})
-	return c, stack
+		if r.StatusCode == expectedStatus {
+			return poll.Success()
+		}
+		return poll.Continue("reaching %q: %d != %d", endpoint, r.StatusCode, expectedStatus)
+	}
+	poll.WaitOn(t, checkUp, poll.WithDelay(retryDelay), poll.WithTimeout(timeout))
+	if r != nil {
+		b, err := io.ReadAll(r.Body)
+		assert.NilError(t, err)
+		return string(b)
+	}
+	return ""
 }
