@@ -55,6 +55,7 @@ func createSecret() *cobra.Command {
 			if len(args) == 2 {
 				file = args[1]
 			}
+			fmt.Println("create secret from " + file)
 			if len(file) == 0 {
 				return fmt.Errorf("secret data source empty: %q", file)
 			}
@@ -63,11 +64,12 @@ func createSecret() *cobra.Command {
 			case "-":
 				in = os.Stdin
 			default:
-				in, err := os.Open(file)
+				f, err := os.Open(file)
 				if err != nil {
 					return err
 				}
-				defer func() { _ = in.Close() }()
+				in = f
+				defer in.Close() //nolint:errcheck
 			}
 			content, err := io.ReadAll(in)
 			if err != nil {

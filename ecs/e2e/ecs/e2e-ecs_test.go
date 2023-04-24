@@ -39,22 +39,25 @@ func TestSecrets(t *testing.T) {
 		secretFile := filepath.Join(t.TempDir(), "secret.txt")
 		err := os.WriteFile(secretFile, []byte("pass1"), 0644)
 		assert.Check(t, err == nil)
-		res := icmd.RunCommand("compose-ecs", "secret", "create", secretName, secretFile)
-		assert.Check(t, strings.Contains(res.Stdout(), secretName), res.Stdout())
+		res := icmd.RunCommand(composeECS(), "secret", "create", secretName, secretFile)
+		stdout := res.Stdout()
+		stderr := res.Stderr()
+		fmt.Println(stderr)
+		assert.Check(t, strings.Contains(stdout, secretName), stdout)
 	})
 
 	t.Run("list secrets", func(t *testing.T) {
-		res := icmd.RunCommand("compose-ecs", "secret", "list")
+		res := icmd.RunCommand(composeECS(), "secret", "list")
 		assert.Check(t, strings.Contains(res.Stdout(), secretName), res.Stdout())
 	})
 
 	t.Run("inspect secret", func(t *testing.T) {
-		res := icmd.RunCommand("compose-ecs", "secret", "inspect", secretName)
+		res := icmd.RunCommand(composeECS(), "secret", "inspect", secretName)
 		assert.Check(t, strings.Contains(res.Stdout(), `"Name": "`+secretName+`"`), res.Stdout())
 	})
 
 	t.Run("rm secret", func(t *testing.T) {
-		icmd.RunCommand("compose-ecs", "secret", "rm", secretName)
+		icmd.RunCommand(composeECS(), "secret", "rm", secretName)
 		res := icmd.RunCommand("secret", "list")
 		assert.Check(t, !strings.Contains(res.Stdout(), secretName), res.Stdout())
 	})
@@ -62,13 +65,13 @@ func TestSecrets(t *testing.T) {
 
 func TestCompose(t *testing.T) {
 	t.Run("compose-ecs up", func(t *testing.T) {
-		res := icmd.RunCommand("compose-ecs", "up")
+		res := icmd.RunCommand(composeECS(), "up")
 		res.Assert(t, icmd.Success)
 	})
 
 	var webURL, wordsURL, secretsURL string
 	t.Run("compose-ecs ps", func(t *testing.T) {
-		res := icmd.RunCommand("compose-ecs", "ps")
+		res := icmd.RunCommand(composeECS(), "ps")
 		lines := strings.Split(strings.TrimSpace(res.Stdout()), "\n")
 
 		assert.Equal(t, 5, len(lines))
@@ -126,7 +129,7 @@ func TestCompose(t *testing.T) {
 	})
 
 	t.Run("compose-ecs down", func(t *testing.T) {
-		res := icmd.RunCommand("compose-ecs", "down")
+		res := icmd.RunCommand(composeECS(), "down")
 
 		checkUp := func(t poll.LogT) poll.Result {
 			out := res.Combined()
@@ -137,6 +140,10 @@ func TestCompose(t *testing.T) {
 		}
 		poll.WaitOn(t, checkUp, poll.WithDelay(2*time.Second), poll.WithTimeout(60*time.Second))
 	})
+}
+
+func composeECS() string {
+	return filepath.Clean("./../../../bin/compose-ecs")
 }
 
 // HTTPGetWithRetry performs an HTTP GET on an `endpoint`, using retryDelay also as a request timeout.
