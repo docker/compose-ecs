@@ -25,6 +25,8 @@ import (
 
 	"github.com/docker/compose/v2/cmd/compose"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
+
 
 	"github.com/docker/compose-ecs/api/backend"
 	"github.com/docker/compose-ecs/cli/cmd"
@@ -63,6 +65,20 @@ func main() {
 	backend.WithBackend(service)
 
 	command := compose.RootCommand(service.ComposeService())
+
+	flagsToCopy := map[string]bool{
+		"env-file":          true,
+		"file":              true,
+		"profile":           true,
+		"project-directory": true,
+		"project-name":      true,
+	}
+
+	command.Flags().VisitAll(func(f *pflag.Flag) {
+		if _, ok := flagsToCopy[f.Name]; ok {
+			root.PersistentFlags().AddFlag(f)
+		}
+	})
 
 	for _, c := range command.Commands() {
 		switch c.Name() {
