@@ -68,36 +68,6 @@ make e2e-local
 Note that this requires the CLI to be built and a local Docker Engine to be
 running.
 
-#### ACI tests
-
-To run the end to end ACI tests, you will first need to have an Azure account
-and have created a service principal. You can create a service principle using
-the Azure CLI after you have done a `docker login azure`:
-
-```console
-$ az login # az login is not synced with docker azure login, need az login for next step
-$ az ad sp create-for-rbac --name 'MyTestServicePrincipal' --sdk-auth
-```
-
-You can then run the ACI tests using the `e2e-aci` target with the various
-`AZURE_` environment variables set:
-
-```console
-AZURE_TENANT_ID="xxx" AZURE_CLIENT_ID="yyy" AZURE_CLIENT_SECRET="yyy" make e2e-aci
-```
-
-Running the ACI tests will override your local login and the service principal
-credentials use a token that cannot be refreshed automatically.
-
-*Note:* You will need to rerun `docker login azure` if you would like to use the
-CLI after running the ACI tests.
-
-You can also run a single ACI test by specifying the test name with the
-`E2E_TEST` variable:
-```console
-AZURE_TENANT_ID="xxx" AZURE_CLIENT_ID="yyy" AZURE_CLIENT_SECRET="yyy" make E2E_TEST=TestContainerRun e2e-aci
-```
-
 #### ECS tests
 
 To run the end to end ECS tests, you will need to have an AWS account and have
@@ -108,11 +78,6 @@ You can then use the `e2e-ecs` target:
 ```console
 TEST_AWS_PROFILE=myProfile TEST_AWS_REGION=eu-west-3 make e2e-ecs
 ```
-
-## ACI CI
-
-ACI CI runs E2E tests and needs the same credentials as described above to run these. 3 secrets are defined in github settings, and accessed by the CI job.
-To rotate these secrets, run the same `az ad sp create-for-rbac` command and update 3 github secrets with the resulting new service provide info.
 
 ## Releases
 
