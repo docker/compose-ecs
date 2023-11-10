@@ -1,7 +1,13 @@
+# :warning:
+Code in this repository has been extracted from deprecated 
+[Cloud integrations](https://github.com/docker/compose-cli). 
+It is **not** intended to become a Docker product, but to be (maybe?) adopted by
+community and moved to another github organization.
+
 # Compose ECS
 
-
 This CLI tool makes it easy to run Docker Compose applications on [ECS](https://aws.amazon.com/ecs)
+
 
 # Usage
 
