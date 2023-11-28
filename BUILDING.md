@@ -22,15 +22,7 @@ make
 This will output a CLI for your host machine in `./bin`.
 
 You will then need to make sure that you have the existing Docker CLI in your
-`PATH` with the name `com.docker.cli`. A make target is provided to help with
-this:
-
-```console
-make moby-cli-link
-```
-
-This will create a symbolic link from the existing Docker CLI to
-`/usr/local/bin` with the name `com.docker.cli`.
+`PATH` with the name `com.docker.cli`.
 
 You can statically cross compile the CLI for Windows, macOS, and Linux using the
 `cross` target.
