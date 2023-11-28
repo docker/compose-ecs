@@ -19,7 +19,7 @@ ARG GOLANGCI_LINT_VERSION=v1.50.1-alpine
 ARG PROTOC_GEN_GO_VERSION=v1.5.2
 
 FROM --platform=${BUILDPLATFORM} golang:${GO_VERSION} AS base
-WORKDIR /compose-cli
+WORKDIR /compose-ecs
 RUN apk add --no-cache -vv \
     git \
     docker \
@@ -88,7 +88,7 @@ RUN --mount=target=. \
     make BINARY=/out/docker -f builder.Makefile cross
 
 FROM scratch AS protos
-COPY --from=make-protos --link /compose-cli/cli/server/protos .
+COPY --from=make-protos --link /compose-ecs/cli/server/protos .
 
 FROM scratch AS cli
 COPY --from=make-cli --link /out/* .
@@ -119,8 +119,8 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     go mod tidy
 
 FROM scratch AS go-mod-tidy
-COPY --from=make-go-mod-tidy --link /compose-cli/go.mod .
-COPY --from=make-go-mod-tidy --link /compose-cli/go.sum .
+COPY --from=make-go-mod-tidy --link /compose-ecs/go.mod .
+COPY --from=make-go-mod-tidy --link /compose-ecs/go.sum .
 
 FROM base AS check-go-mod
 COPY . .
